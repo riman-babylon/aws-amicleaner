@@ -46,6 +46,26 @@ class Fetcher(object):
 
         return amis
 
+    def fetch_lt(self):
+
+        """
+        Find all AMIs for launch templates
+        """
+
+        resp = self.ec2.describe_launch_templates()
+        all_lt = [lt.get("LaunchTemplateName", "")
+                  for lt in resp.get("LaunchTemplates", [])]
+
+        amis = []
+        for lt_name in all_lt:
+            resp = self.ec2.describe_launch_template_versions(
+                LaunchTemplateName=lt_name
+            )
+            amis.extend([lt_latest_version.get("LaunchTemplateData", {}).get("ImageId")
+                        for lt_latest_version in resp.get("LaunchTemplateVersions", [])])
+
+        return amis
+
     def fetch_instances(self):
 
         """ Find AMIs for not terminated EC2 instances """

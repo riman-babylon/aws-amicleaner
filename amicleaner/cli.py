@@ -50,6 +50,7 @@ class App(object):
 
         if not excluded_amis:
             excluded_amis += f.fetch_lc()
+            excluded_amis += f.fetch_lt()
             excluded_amis += f.fetch_instances()
 
         candidates = [v
