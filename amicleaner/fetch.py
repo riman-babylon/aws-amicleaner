@@ -33,47 +33,15 @@ class Fetcher(object):
 
         return available_amis
 
-    def fetch_unattached_lc(self):
+    def fetch_lc(self):
 
         """
-        Find AMIs for launch configurations unattached
-        to autoscaling groups
+        Find all AMIs for launch configurations
         """
-
-        resp = self.asg.describe_auto_scaling_groups()
-        used_lc = (asg.get("LaunchConfigurationName", "")
-                   for asg in resp.get("AutoScalingGroups", []))
 
         resp = self.asg.describe_launch_configurations()
-        all_lcs = (lc.get("LaunchConfigurationName", "")
-                   for lc in resp.get("LaunchConfigurations", []))
 
-        unused_lcs = list(set(all_lcs) - set(used_lc))
-
-        resp = self.asg.describe_launch_configurations(
-            LaunchConfigurationNames=unused_lcs
-        )
         amis = [lc.get("ImageId")
-                for lc in resp.get("LaunchConfigurations", [])]
-
-        return amis
-
-    def fetch_zeroed_asg(self):
-
-        """
-        Find AMIs for autoscaling groups who's desired capacity is set to 0
-        """
-
-        resp = self.asg.describe_auto_scaling_groups()
-        zeroed_lcs = [asg.get("LaunchConfigurationName", "")
-                      for asg in resp.get("AutoScalingGroups", [])
-                      if asg.get("DesiredCapacity", 0) == 0]
-
-        resp = self.asg.describe_launch_configurations(
-            LaunchConfigurationNames=zeroed_lcs
-        )
-
-        amis = [lc.get("ImageId", "")
                 for lc in resp.get("LaunchConfigurations", [])]
 
         return amis
