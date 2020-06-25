@@ -106,9 +106,11 @@ class App(object):
             print(TERM.bold("\nCleaning from {} AMI id(s) ...".format(
                 len(candidates))
             ))
+            return
             failed = AMICleaner().remove_amis_from_ids(candidates)
         else:
             print(TERM.bold("\nCleaning {} AMIs ...".format(len(candidates))))
+            return
             failed = AMICleaner().remove_amis(candidates)
 
         if failed:
